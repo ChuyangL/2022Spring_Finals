@@ -1,9 +1,263 @@
+"""
+IS597-PR Final Project:
+Analysis changes in Lending data and relationship with state income
+
+Group Members:
+1. Yuting Xu (NetID: yutingx4)
+2. Zheng Zhang (NetID: zhengz13)
+3. Chuyang Li (NetID: chuyangl)
+
+This .py file stores all pre-defined functions that are needed during data analysis.
+"""
+import sys
+import os
+import requests
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import typing
+import seaborn as sns
 import numba as nb
+import plotly.express as px
 
+
+def file_exist(list_of_files: str):
+    """
+    Examine whether the raw data file exists in the directory. If not, download from corresponding source.
+    Only four data files are allowed as correct input.
+
+    :param list_of_files: list of file names (strings) that need to be checked.
+    :return: (No returns)
+
+    Doctest 1: Valid input
+    >>> file_exist(['loans_full_schema.csv'])
+    Examine existence of data files:
+    File loans_full_schema.csv exists.
+
+    Doctest 2: Invalid input
+    >>> file_exist(['1.csv'])
+    Examine existence of data files:
+    Invalid file name, try again!
+    """
+    # Stored file source
+    path_dict = {'loans_full_schema.csv': 'https://www.openintro.org/data/csv/loans_full_schema.csv',
+                 'qgdpstate0322.xlsx': 'https://www.bea.gov/sites/default/files/2022-03/qgdpstate0322.xlsx',
+                 'tabn102.30.xls': 'https://nces.ed.gov/programs/digest/d20/tables/xls/tabn102.30.xls',
+                 'interactive_bulletin_charts_all_median.csv': 'https://www.federalreserve.gov/econres/scf/dataviz/download/interactive_bulletin_charts_all_median.csv'
+                 }
+
+    print("Examine existence of data files:")
+    for file in list_of_files:
+        if not os.path.exists(file):
+            if file not in path_dict.keys():
+                print("Invalid file name, try again!")
+            else:
+                print("File {} does not exist.".format(file))
+                try:
+                    open(file, "wb").write(requests.get(path_dict[file]).content)
+                    print("File {} downloaded.".format(file))
+                except Exception:
+                    print("Download failed!")
+        else:
+            print("File {} exists.".format(file))
+
+
+def loan_categorize(loans: pd.DataFrame) -> pd.DataFrame:
+    """
+    Categorize loan records into 3 types: Current, Good, Bad, and insert column to tag their status
+    :param loans: Original dataset of loans.
+    :return: loans dataset (with loan_category column)
+             finished loans dataset (with only finished dataset and has loan_category column)
+
+    >>> file_exist(['loans_full_schema.csv'])
+    Examine existence of data files:
+    File loans_full_schema.csv exists.
+    >>> loans = pd.read_csv('loans_full_schema.csv')
+
+    Doctest 1: Valid Input
+    >>> all_loans, finished = loan_categorize(loans=loans)
+    >>> all_loans.shape
+    (10000, 58)
+    >>> finished.shape
+    (520, 58)
+    """
+    good_loans = loans[loans['loan_status'] == 'Fully Paid']
+    good_loans.insert(loc=0, column='loan_category', value='Good Loans', allow_duplicates=True)
+
+    bad_loans = loans[loans['loan_status'].isin(['Charged Off', 'Late (31-120 days)'])]
+    bad_loans.insert(loc=0, column='loan_category', value='Bad Loans', allow_duplicates=True)
+
+    current_loans = loans[loans['loan_status'].isin(['Current', 'In Grace Period', 'Late (16-30 days)'])]
+    current_loans.insert(loc=0, column='loan_category', value='Current Loans', allow_duplicates=True)
+
+    # Merge all dataframes together to create a new loans dataframe
+    loans = good_loans.append(bad_loans)
+    loans = loans.append(current_loans)
+
+    finished_loans = good_loans.append(bad_loans)
+
+    return loans, finished_loans
+
+
+def vis_dis_comparison(data: pd.DataFrame, independent: str, category: str, palette: dict):
+    """
+    Visualize distribution on a single variable divided to groups. The plot will be violin plots.
+
+    :param data: Input dataset to be analyzed.
+    :param independent: The target variable.
+    :param category: The variable to be grouped by.
+    :param palette: Input color palette.
+    :return: (No returns)
+
+    >>> file_exist(['loans_full_schema.csv'])
+    Examine existence of data files:
+    File loans_full_schema.csv exists.
+    >>> loans = pd.read_csv('loans_full_schema.csv')
+    >>> pal = {"Good Loans": "b", "Bad Loans": ".85"}
+
+    Doctest 1: Invalid Input
+    >>> vis_dis_comparison(data=loans, independent='1', category='2', palette=pal)
+    Invalid input. Try again!
+    """
+    try:
+        # Initial a new plot
+        sns.set_theme(style="whitegrid")
+
+        # Comparison of distribution of each group
+        sns.violinplot(data=data, x=category, y=independent,
+                       split=True, inner="quart", linewidth=1,
+                       palette=palette)
+        sns.despine(left=True)
+    except Exception:
+        print('Invalid input. Try again!')
+
+
+def vis_dis_cummu(data: pd.DataFrame, independent: str, category: str):
+    """
+    Visualize cumulative proportion of certain variable.
+
+    :param data: Input dataset to be analyzed.
+    :param independent: Variable to be visualized.
+    :param category: Variable for group by reference.
+    :return: (No returns)
+
+    >>> file_exist(['loans_full_schema.csv'])
+    Examine existence of data files:
+    File loans_full_schema.csv exists.
+    >>> loans = pd.read_csv('loans_full_schema.csv')
+
+    Doctest 1: Invalid Input
+    >>> vis_dis_cummu(data=loans, independent='1', category='2')
+    Invalid input. Try again!
+
+    Doctest 2: Valid Input
+    >>> vis_dis_cummu(data=loans, independent='interest_rate', category='loan_status')
+    """
+    try:
+        # Initial a new plot
+        sns.set_theme(style="whitegrid")
+
+        # Cumulative distribution
+        sns.displot(data=data,
+                    x=independent, hue=category,
+                    multiple='fill',
+                    kind="kde", height=6,
+                    clip=(0, None),
+                    palette="ch:rot=-.25,hue=1,light=.75",
+                    )
+    except Exception:
+        print('Invalid input. Try again!')
+
+
+def plot_counts(data: pd.DataFrame, x: str, category: str):
+    """
+    Plot counts for multiple independent variables.
+
+    :param data: Input pd.DataFrame.
+    :param x: Column used for x axis.
+    :param category: Column used for hue.
+    :return: (No return)
+
+    >>> file_exist(['loans_full_schema.csv'])
+    Examine existence of data files:
+    File loans_full_schema.csv exists.
+    >>> loans = pd.read_csv('loans_full_schema.csv')
+
+    Doctest 1: Valid Input
+    >>> plot_counts(data=loans, x='sub_grade', category='loan_status')
+
+    Doctest 2: Invalid Input
+    >>> plot_counts(data=loans, x='sub_grade', category='1')
+    Invalid input. Try again!
+    """
+    try:
+        sns.set_theme(style="whitegrid")
+
+        f, ax = plt.subplots(figsize=(15, 5))
+
+        sns.despine(f)
+
+        sns.histplot(
+            data,
+            x=x, hue=category,
+            multiple="stack",
+            palette="light:m_r",
+            edgecolor=".3",
+            linewidth=.5,
+            log_scale=False,
+        )
+    except Exception:
+        print('Invalid input. Try again!')
+
+
+def plot_dis(data: pd.DataFrame, x: str, y: str):
+    """
+    Plot a 2-dimensional distribution.
+
+    :param data: Input pd.DataFrame.
+    :param x: Dimension 1.
+    :param y: Dimension 2.
+    :return: (No returns)
+
+    >>> file_exist(['loans_full_schema.csv'])
+    Examine existence of data files:
+    File loans_full_schema.csv exists.
+    >>> loans = pd.read_csv('loans_full_schema.csv')
+
+    Doctest 1: Valid Input
+    >>> plot_dis(data=loans, x='sub_grade', y='loan_status')
+
+    Doctest 2: Invalid Input
+    >>> plot_dis(data=loans, x='sub_grade', y='1')
+    Invalid input. Try again!
+    """
+    try:
+        sns.set_theme(style="dark")
+
+        sns.displot(
+            data=data, x=x, y=y, kind='hist'
+        )
+    except Exception:
+        print('Invalid input. Try again!')
+
+
+def geo_dist_usa(data: pd.DataFrame, loc_col: str, vis_col: str):
+    """
+    Visualize variable on a map of USA.
+
+    :param data: Input dataset.
+    :param loc_col: Column that indicate location (code for states).
+    :param vis_col: Value variable.
+    :return: (No returns)
+    """
+    fig = px.choropleth(data,
+                        locations=loc_col,
+                        locationmode='USA-states',
+                        scope='usa',
+                        color=vis_col,
+                        color_continuous_scale='Viridis_r'
+                        )
+    fig.show()
 
 def filter_debt(data: pd.DataFrame) -> pd.DataFrame:
     """
