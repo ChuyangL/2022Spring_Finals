@@ -1,9 +1,9 @@
 # 2022Spring_Finals
 ### IS 597: Analysis changes in Lending data and relationship with state income
 ### Group members: 
-Chuyang Li(), github: ChuyangL
-Zheng Zhang(), github: gahsty 
-Yuting Xu(yutingx4), github: Msz-cx
+Chuyang Li(), github: ChuyangL  
+Zheng Zhang(), github: gahsty   
+Yuting Xu(yutingx4), github: Msz-cx  
 
 ### Introduction of lending club
 ![image](https://user-images.githubusercontent.com/54805284/166623043-b7d1802a-7600-40db-8a57-bcdd6c17012a.png)
