@@ -34,3 +34,9 @@ Source: https://www.minneapolisfed.org/about-us/monetary-policy/inflation-calcul
 
 ### Raw analysis on Lending Club dataset
 https://kazink36.github.io/pdf/loans.html
+
+### Instructions to use the code
+Ensure project.py and Final_project.ipynb are in the same directory, run cells Final_project.ipynb in order to get the right output. The project.py stores functions that would be called in notebook and has been imported at the top of the notebook. 
+
+### Main conclusions of the hypothesis
+1. 
