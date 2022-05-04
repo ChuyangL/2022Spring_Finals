@@ -1,14 +1,23 @@
 # 2022Spring_Finals: Analysis changes in Lending data and relationship with state income
 ## Group members: 
-Chuyang Li(), github: ChuyangL  
-Zheng Zhang(), github: gahsty   
+Chuyang Li(chuyangl), github: ChuyangL  
+Zheng Zhang(zhengz13), github: gahsty   
 Yuting Xu(yutingx4), github: Msz-cx  
 
 ## Introduction of lending club
 ![image](https://user-images.githubusercontent.com/54805284/166623043-b7d1802a-7600-40db-8a57-bcdd6c17012a.png)
 
 ## Lending Club Loan Data Analysis
-
+1. 10,000 rows, 55 columns, multiple data types, and has null value for some columns.
+2. Value ranges for variables
+   Numerical Variables: summary statistics (max, min, mean, ...)
+   Categorical Variables: unique values and value count
+3. Distribution of important variables
+   3.1 Continuous Variables: Interest Rate, Loan Amount, Installment (monthly)
+       Features: Right-skewed, higher proportion on bad loans as the values increase
+   3.2 Categorical Variables: Term (36 or 60), Subgrades, Length of Employment, Purpose of Loan
+       Features: Not evenly distributed
+4. Geographical Distribution: Percentage of Good/Bad Loans, Loans Per User
 
 ## Limitation of current research
 1. The analysis is based on the customer database of the company “Lending Club”, which might contain bias as it could not represent features of all loan transactions in the US.  
