@@ -11,6 +11,8 @@ This .py file stores all pre-defined functions that are needed during data analy
 """
 import sys
 import os
+
+import pandas
 import requests
 import numpy as np
 import pandas as pd
@@ -427,3 +429,34 @@ def remove_outlier(datas: typing.List, boundary: int) -> typing.List:
         data.plot(kind="hist", bins=20, alpha=0.5, legend=True)
         ans.append(data)
     return ans
+
+
+def boxplot_refill(data: pandas.Series):
+    iqr = data.quantile(0.75) - data.quantile(0.25)
+    upper = data.quantile(0.75) + 1.5 * iqr
+    lower = data.quantile(0.25) - 1.5 * iqr
+
+    def trans(x):
+        global i
+        if x > upper:
+            return pandas.NA
+        elif x < lower:
+            return pandas.NA
+        else:
+            return x
+
+    return data.map(trans)
+
+
+def delete_outliers(data: pandas.DataFrame, col: str) -> pandas.DataFrame:
+    data.loc[col] = boxplot_refill(data.loc[col])
+    data = data.dropna(axis=0, how='any')
+    data.loc[col] = data[col].astype(float)
+    return data
+
+
+def open_file(name: str):
+    data = pd.read_csv(name)
+    df = pd.DataFrame(data, columns=['debt_to_income', 'emp_length'])
+    df = df.dropna(axis=0, how='any')
+    return [data, df]
