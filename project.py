@@ -9,17 +9,14 @@ Group Members:
 
 This .py file stores all pre-defined functions that are needed during data analysis.
 """
-import sys
-import os
 
-import pandas
+import os
 import requests
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import typing
 import seaborn as sns
-import numba as nb
 import plotly.express as px
 
 
@@ -32,12 +29,12 @@ def file_exist(list_of_files: str):
     :return: (No returns)
 
     Doctest 1: Valid input
-    >>> file_exist(['loans_full_schema.csv'])
+    >>> file_exist(['data/loans_full_schema.csv'])
     Examine existence of data files:
-    File loans_full_schema.csv exists.
+    File data/loans_full_schema.csv exists.
 
     Doctest 2: Invalid input
-    >>> file_exist(['1.csv'])
+    >>> file_exist(['data/1.csv'])
     Examine existence of data files:
     Invalid file name, try again!
     """
@@ -71,10 +68,10 @@ def loan_categorize(loans: pd.DataFrame) -> pd.DataFrame:
     :return: loans dataset (with loan_category column)
              finished loans dataset (with only finished dataset and has loan_category column)
 
-    >>> file_exist(['loans_full_schema.csv'])
+    >>> file_exist(['data/loans_full_schema.csv'])
     Examine existence of data files:
-    File loans_full_schema.csv exists.
-    >>> loans = pd.read_csv('loans_full_schema.csv')
+    File data/loans_full_schema.csv exists.
+    >>> loans = pd.read_csv('data/loans_full_schema.csv')
 
     Doctest 1: Valid Input
     >>> all_loans, finished = loan_categorize(loans=loans)
@@ -111,10 +108,10 @@ def vis_dis_comparison(data: pd.DataFrame, independent: str, category: str, pale
     :param palette: Input color palette.
     :return: (No returns)
 
-    >>> file_exist(['loans_full_schema.csv'])
+    >>> file_exist(['data/loans_full_schema.csv'])
     Examine existence of data files:
-    File loans_full_schema.csv exists.
-    >>> loans = pd.read_csv('loans_full_schema.csv')
+    File data/loans_full_schema.csv exists.
+    >>> loans = pd.read_csv('data/loans_full_schema.csv')
     >>> pal = {"Good Loans": "b", "Bad Loans": ".85"}
 
     Doctest 1: Invalid Input
@@ -143,10 +140,10 @@ def vis_dis_cummu(data: pd.DataFrame, independent: str, category: str):
     :param category: Variable for group by reference.
     :return: (No returns)
 
-    >>> file_exist(['loans_full_schema.csv'])
+    >>> file_exist(['data/loans_full_schema.csv'])
     Examine existence of data files:
-    File loans_full_schema.csv exists.
-    >>> loans = pd.read_csv('loans_full_schema.csv')
+    File data/loans_full_schema.csv exists.
+    >>> loans = pd.read_csv('data/loans_full_schema.csv')
 
     Doctest 1: Invalid Input
     >>> vis_dis_cummu(data=loans, independent='1', category='2')
@@ -180,10 +177,10 @@ def plot_counts(data: pd.DataFrame, x: str, category: str):
     :param category: Column used for hue.
     :return: (No return)
 
-    >>> file_exist(['loans_full_schema.csv'])
+    >>> file_exist(['data/loans_full_schema.csv'])
     Examine existence of data files:
-    File loans_full_schema.csv exists.
-    >>> loans = pd.read_csv('loans_full_schema.csv')
+    File data/loans_full_schema.csv exists.
+    >>> loans = pd.read_csv('data/loans_full_schema.csv')
 
     Doctest 1: Valid Input
     >>> plot_counts(data=loans, x='sub_grade', category='loan_status')
@@ -221,10 +218,10 @@ def plot_dis(data: pd.DataFrame, x: str, y: str):
     :param y: Dimension 2.
     :return: (No returns)
 
-    >>> file_exist(['loans_full_schema.csv'])
+    >>> file_exist(['data/loans_full_schema.csv'])
     Examine existence of data files:
-    File loans_full_schema.csv exists.
-    >>> loans = pd.read_csv('loans_full_schema.csv')
+    File data/loans_full_schema.csv exists.
+    >>> loans = pd.read_csv('data/loans_full_schema.csv')
 
     Doctest 1: Valid Input
     >>> plot_dis(data=loans, x='sub_grade', y='loan_status')
@@ -267,7 +264,7 @@ def filter_debt(data: pd.DataFrame) -> pd.DataFrame:
     :param data: general consumer data
     :return: borrower data
 
-    >>> a = pd.read_csv("SCFP2010.csv")
+    >>> a = pd.read_csv("data/SCFP2010.csv")
     >>> a["HDEBT"].unique()
     array([1, 0], dtype=int64)
     >>> b = filter_debt(a)
@@ -431,23 +428,23 @@ def remove_outlier(datas: typing.List, boundary: int) -> typing.List:
     return ans
 
 
-def boxplot_refill(data: pandas.Series):
+def boxplot_refill(data: pd.Series):
     iqr = data.quantile(0.75) - data.quantile(0.25)
     upper = data.quantile(0.75) + 1.5 * iqr
     lower = data.quantile(0.25) - 1.5 * iqr
 
     def trans(x):
         if x > upper:
-            return pandas.NA
+            return pd.NA
         elif x < lower:
-            return pandas.NA
+            return pd.NA
         else:
             return x
 
     return data.map(trans)
 
 
-def delete_outliers(data: pandas.DataFrame, col: str) -> pandas.DataFrame:
+def delete_outliers(data: pd.DataFrame, col: str) -> pd.DataFrame:
     data[col] = boxplot_refill(data[col])
     data = data.dropna(axis=0, how='any')
     data[col] = data[col].astype(float)
