@@ -464,6 +464,18 @@ def delete_outliers(data: pd.DataFrame, col: str) -> pd.DataFrame:
 
 
 def open_file(name: str):
+    """
+    open csv file as dataframe, and seperate them into two part.
+    one is a dataframe contains whole columns.
+    another is only contains two columns "debt_to_income" and "emp_length"
+    :param name:
+    :return: An list contains above two dataframe
+    >>> t = open_file("data/loans_full_schema.csv")
+    >>> t[1].columns.values.tolist()
+    ['debt_to_income', 'emp_length']
+    >>> t[0].shape[0]>1000
+    True
+    """
     data = pd.read_csv(name)
     df = pd.DataFrame(data, columns=['debt_to_income', 'emp_length'])
     df = df.dropna(axis=0, how='any')
