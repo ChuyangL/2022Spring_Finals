@@ -448,9 +448,9 @@ def boxplot_refill(data: pandas.Series):
 
 
 def delete_outliers(data: pandas.DataFrame, col: str) -> pandas.DataFrame:
-    data.loc[col] = boxplot_refill(data[col])
+    data[col] = boxplot_refill(data[col])
     data = data.dropna(axis=0, how='any')
-    data.loc[col] = data[col].astype(float)
+    data[col] = data[col].astype(float)
     return data
 
 
