@@ -428,36 +428,40 @@ def remove_outlier(datas: typing.List, boundary: int) -> typing.List:
         ans.append(data)
     return ans
 
-'''
-def boxplot_refill(data: pd.Series):
-    iqr = data.quantile(0.75) - data.quantile(0.25)
-    upper = data.quantile(0.75) + 1.5 * iqr
-    lower = data.quantile(0.25) - 1.5 * iqr
-
-    def trans(x):
-        if x > upper:
-            return pd.NA
-        elif x < lower:
-            return pd.NA
-        else:
-            return x
-
-    return data.map(trans)
-'''
-
 
 def delete_outliers(data: pd.DataFrame, col: str) -> pd.DataFrame:
-    iqr = data[col].quantile(0.75) - data[col].quantile(0.25)
-    upper = data[col].quantile(0.75) + 1.5 * iqr
-    lower = data[col].quantile(0.25) - 1.5 * iqr
+    """
+    Calculate iqr and delete from the input dataset.
 
-    data = data[(data[col] >= lower) & (data[col] <= upper)]
-    '''
-    data[col] = boxplot_refill(data[col])
-    data = data.dropna(axis=0, how='any')
-    data[col] = data[col].astype(float)
-    '''
-    return data
+    :param data: Input dataset.
+    :param col: The column to be handled.
+    :return: Dataset with no outlier in specific columns.
+
+    >>> file_exist(['loans_full_schema.csv'])
+    Examine existence of data files:
+    File loans_full_schema.csv exists.
+    >>> loans = pd.read_csv('loans_full_schema.csv')
+
+    Doctest 1: Invalid Input
+    >>> delete_outliers(data=loans, col='1')
+    Invalid column.
+    """
+    try:
+        # Calculate iqr
+        iqr = data[col].quantile(0.75) - data[col].quantile(0.25)
+
+        # Define lower and upper bound
+        upper = data[col].quantile(0.75) + 1.5 * iqr
+        lower = data[col].quantile(0.25) - 1.5 * iqr
+
+        # Select data records that are between the two bounds
+        data = data[(data[col] >= lower) & (data[col] <= upper)]
+
+        return data
+
+    except KeyError:
+        # In case the input column does not exist in the dataset
+        print('Invalid column.')
 
 
 def open_file(name: str):
