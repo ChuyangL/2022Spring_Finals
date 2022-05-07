@@ -47,4 +47,4 @@ https://kazink36.github.io/pdf/loans.html
 Ensure project.py and Final_project.ipynb are in the same directory, run cells Final_project.ipynb in order to get the right output. The project.py stores functions that would be called in notebook and has been imported at the top of the notebook.   
 
 ## Main conclusions of the hypothesis
-1. 
+1. About 40% general borrowers have a debt-to-income ratio less than 0.5, which is a healthy ratio. And about 90% general borrowers have a ratio less than 1.5. For lending club users, their debt-to-income ratio is greater than 5, the main range is betwen 10-40, which is very unhealthy. According to most commercial banks, the DTI requirement for conducting a regular conforming Loan authorization is usually 43%. As a conclusion, lending club users have higher debt-to-income ratio, as well as worse economice situation than borrowers from all other lending resources.
