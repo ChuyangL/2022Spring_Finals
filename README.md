@@ -49,3 +49,13 @@ Ensure project.py and Final_project.ipynb are in the same directory, run cells F
 ## Main conclusions of the hypothesis
 ![image](https://user-images.githubusercontent.com/54805284/167269153-115ab373-1e9d-48a9-803a-3a3222994558.png)
 1. About 40% general borrowers have a debt-to-income ratio less than 0.5, which is a healthy ratio. And about 90% general borrowers have a ratio less than 1.5. For lending club users, their debt-to-income ratio is greater than 5, the main range is betwen 10-40, which is very unhealthy. According to most commercial banks, the DTI requirement for conducting a regular conforming Loan authorization is usually 43%. As a conclusion, lending club users have higher debt-to-income ratio, as well as worse economice situation than borrowers from all other lending resources.
+
+
+![image](https://user-images.githubusercontent.com/30657669/167276830-62ec0ed8-9f3a-4261-b84f-49308dbdb346.png)
+![image](https://user-images.githubusercontent.com/30657669/167276834-295c998d-92e7-48d3-86ed-50ffe574b771.png)
+2. The DTI (debt to income ratio) has no correlations to the number of years that the applicant is in the job, but it do has a positive relationship with other factors such as people's total credit and current number of accounts. 
+
+
+![image](https://user-images.githubusercontent.com/30657669/167276816-a021ec71-a52a-47a3-b0e2-fc7b89b118a3.png)
+
+3. People's annual incomes are not related to loan status (whether people make repayment on time).
