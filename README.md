@@ -57,4 +57,5 @@ Ensure project.py and Final_project.ipynb are in the same directory, run cells F
 
 
 ![image](https://user-images.githubusercontent.com/30657669/167276816-a021ec71-a52a-47a3-b0e2-fc7b89b118a3.png)
+
 3. People's annual incomes are not related to loan status (whether people make repayment on time).
