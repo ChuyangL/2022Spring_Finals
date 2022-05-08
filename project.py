@@ -11,6 +11,8 @@ This .py file stores all pre-defined functions that are needed during data analy
 """
 
 import os
+
+import numba
 import requests
 import numpy as np
 import pandas as pd
@@ -258,6 +260,7 @@ def geo_dist_usa(data: pd.DataFrame, loc_col: str, vis_col: str):
                         )
     fig.show()
 
+
 def filter_debt(data: pd.DataFrame) -> pd.DataFrame:
     """
     filter general consumer data with only people who have debt
@@ -357,12 +360,12 @@ def cut_by_category(data: pd.core.series.Series, bins: typing.List, labels: typi
 
 
 def calculate_concat_ratio(data1: pd.core.series.Series,
-                            data2: pd.core.series.Series,
-                            data3: pd.core.series.Series,
-                            bins: typing.List,
-                            labels: typing.List,
-                            rename_map: dict,
-                            calculate: bool) -> pd.DataFrame:
+                           data2: pd.core.series.Series,
+                           data3: pd.core.series.Series,
+                           bins: typing.List,
+                           labels: typing.List,
+                           rename_map: dict,
+                           calculate: bool) -> pd.DataFrame:
     """ calculate the percentage of each category of three data series input based on given bins, and then concat the
     three ratio series, return as well-named dataframe
     :param data1: original numerial data series1
@@ -422,7 +425,7 @@ def remove_outlier(datas: typing.List, boundary: int) -> typing.List:
     """
     ans = []
     for data in datas:
-        data = data[data<boundary]
+        data = data[data < boundary]
         data.plot(kind="hist", bins=20, alpha=0.5, legend=True)
         ans.append(data)
     return ans
@@ -480,3 +483,34 @@ def open_file(name: str):
     df = pd.DataFrame(data, columns=['debt_to_income', 'emp_length'])
     df = df.dropna(axis=0, how='any')
     return [data, df]
+
+
+def using_numba(x: pd.Series, dh: float):
+    """
+    one implemented numba help function
+    :param x:pandas Series using fo process
+    :param dh: threshold value
+    :return:pandas Series after process
+    """
+    result = delete_using_dh(x.to_numpy(), dh)
+    return pd.Series(result,index=x.index, name="numba_DTI")
+
+
+@numba.jit
+def delete_using_dh(array, dh):
+    """
+    implement one numba accelerated function. This is used to delete the value which beyond
+    the threshold in a pandas series. Due to numba's feature. We need to make this series into
+    numpy first.
+    :param array: numpy like pandas series
+    :param dh: float threshold
+    :return: result numpy with some NA value (threshold value -> NA)
+    """
+    n = len(array)
+    result = np.empty(n, dtype="float64")
+    for i in range(n):
+        if -dh < array[i] < dh:
+            result[i] = np.NaN
+        else:
+            result[i]=array[i]
+    return result
